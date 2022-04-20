@@ -1,9 +1,11 @@
-import {BrowserRouter as Router, Route, Routes} from 'react-router-dom' 
-import Signin from './pages/Signin'
-import Signup from './pages/Signup'
-import Profile from './pages/Profile'
-import ForgotPassword from './pages/ForgotPassword'
-import NotFound from './pages/NotFound'
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Signin from "./pages/Signin";
+import Signup from "./pages/Signup";
+import Profile from "./pages/Profile";
+import ForgotPassword from "./pages/ForgotPassword";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -17,6 +19,7 @@ function App() {
           <Route path="/*" element={<NotFound />} />
         </Routes>
       </Router>
+      <ToastContainer />
     </div>
   );
 }

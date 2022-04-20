@@ -18,9 +18,14 @@ const Signin = () => {
     }));
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(formData);
+  };
+
   return (
     <div className="h-screen w-full mx-auto flex items-center justify-center xl:bg-gray-200 lg:bg-gray-200 md:bg-gray-200 sm:bg-gray-200">
-      <div className="h-fit w-fit py-12 px-5 xl:px-20 lg:px-20 md:px-20 sm:px-20 md:px-20 bg-white rounded-lg">
+      <div className="h-fit w-full xl:w-fit lg:w-fit md:w-fit sm:w-fit py-12 px-5 xl:px-20 lg:px-20 md:px-20 sm:px-20 md:px-20 bg-white rounded-lg">
         <h1 className="text-3xl font-bold mb-2 tracking-tighter">
           Sign in to your account
         </h1>
@@ -52,7 +57,7 @@ const Signin = () => {
           </span>
           <span className="h-0.5 w-full grow bg-gray-400"></span>
         </div>
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="my-2 xl:my-5 lg:my-5 md:my-5">
             <label className="text-gray-600 font-semibold" htmlFor="email">
               Email address
@@ -63,6 +68,7 @@ const Signin = () => {
               value={email}
               id="email"
               onChange={handleChange}
+              autoComplete="off"
             />
           </div>
           <div className="my-2 xl:my-5 lg:my-5 md:my-5">
