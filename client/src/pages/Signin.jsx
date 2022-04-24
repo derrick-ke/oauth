@@ -1,31 +1,54 @@
-import { useState } from "react";
-import { FaFacebook, FaGoogle, FaGithub } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { FaInfoCircle } from "react-icons/fa";
+import { HiEye } from "react-icons/hi";
+import { Link, useNavigate } from "react-router-dom";
+import Card from "../components/Card";
+import SocialLinks from "../components/SocialLinks";
+import { signInUser } from "../context/user/UserActions";
+
+const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
 const Signin = () => {
-  //create form data in state
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const emailRef = useRef();
+  const errRef = useRef();
 
-  const { email, password } = formData;
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      [e.target.id]: e.target.value,
-    }));
-  };
+  const [email, setEmail] = useState("");
+  const [validEmail, setValidEmail] = useState(false);
+  const [emailFocus, setEmailFocus] = useState(false);
 
-  const handleSubmit = (e) => {
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const [errMsg, setErrMsg] = useState("");
+  const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    emailRef.current.focus();
+  }, []);
+
+  useEffect(() => {
+    const result = EMAIL_REGEX.test(email);
+    setValidEmail(result);
+  }, [email]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+
+    const response = await signInUser(email, password);
+
+    if (response.status !== "success") {
+      setErrMsg("Incorrect email or password");
+    }
+
+    navigate("/");
   };
 
   return (
-    <div className="h-screen w-full mx-auto flex items-center justify-center xl:bg-gray-200 lg:bg-gray-200 md:bg-gray-200 sm:bg-gray-200">
-      <div className="h-fit w-full xl:w-fit lg:w-fit md:w-fit sm:w-fit py-12 px-5 xl:px-20 lg:px-20 md:px-20 sm:px-20 md:px-20 bg-white rounded-lg">
+    <>
+      <Card>
         <h1 className="text-3xl font-bold mb-2 tracking-tighter">
           Sign in to your account
         </h1>
@@ -38,49 +61,49 @@ const Signin = () => {
             create a new account
           </Link>
         </h3>
-        <h3 className="text-gray-600 mb-2 font-semibold ">Sign in with</h3>
-        <div className="flex justify-between mb-7">
-          <button className="px-8 border-2 rounded-lg py-2 border-gray-300 text-gray-500 hover:text-indigo-500 ">
-            <FaFacebook className=" text-2xl " />
-          </button>
-          <button className="px-8 border-2 rounded-lg py-2 border-gray-300 text-gray-500 hover:text-indigo-500 ">
-            <FaGoogle className=" text-2xl " />
-          </button>
-          <button className="px-8 border-2 rounded-lg py-2 border-gray-300 text-gray-500 hover:text-indigo-500 ">
-            <FaGithub className=" text-2xl " />
-          </button>
-        </div>
-        <div className="flex justify-between items-center mb-6">
-          <span className="h-0.5 w-full grow bg-gray-400"></span>
-          <span className="w-fit grow-0 shrink-0 text-center text-gray-400 text-sm mx-3">
-            Or continue with
-          </span>
-          <span className="h-0.5 w-full grow bg-gray-400"></span>
-        </div>
+        <SocialLinks />
         <form onSubmit={handleSubmit}>
+          <p
+            ref={errRef}
+            className={
+              errMsg
+                ? " flex items-center bg-red-400 rounded-lg px-3 py-4 text-white text-sm mb-5"
+                : "hidden"
+            }
+          >
+            <FaInfoCircle className="mr-1" />
+            {errMsg}
+          </p>
           <div className="my-2 xl:my-5 lg:my-5 md:my-5">
             <label className="text-gray-600 font-semibold" htmlFor="email">
-              Email address
+              Email address:
             </label>
             <input
               className="w-full rounded-lg border-2 border-gray-300 py-2 mt-2 px-3 focus:outline-indigo-500"
               type="email"
               value={email}
               id="email"
-              onChange={handleChange}
+              onChange={(e) => setEmail(e.target.value)}
               autoComplete="off"
+              required
+              ref={emailRef}
             />
           </div>
-          <div className="my-2 xl:my-5 lg:my-5 md:my-5">
+          <div className="my-2 xl:my-5 lg:my-5 md:my-5 relative">
             <label className="text-gray-600 font-semibold" htmlFor="password">
-              Password
+              Password:
             </label>
             <input
-              className="w-full rounded-lg border-2 border-gray-300 py-2 mt-2 px-3 focus:outline-indigo-500 "
-              type="password"
+              className="w-full rounded-lg border-2 border-gray-300 py-2 mt-2 pl-3 pr-8 focus:outline-indigo-500 "
+              type={showPassword ? "text" : "password"}
               value={password}
               id="password"
-              onChange={handleChange}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <HiEye
+              className="absolute right-3 bottom-3.5 cursor-pointer text-gray-600"
+              onClick={() => setShowPassword((prevState) => !prevState)}
             />
           </div>
           <div className="w-full text-right my-5">
@@ -91,12 +114,15 @@ const Signin = () => {
               Forgot your password?
             </Link>
           </div>
-          <button className="bg-indigo-500 rounded-lg text-white w-full py-3 font-semibold">
+          <button
+            className="transition	bg-indigo-500 rounded-lg text-white w-full py-3 font-semibold mt-4 hover:bg-indigo-600 disabled:bg-gray-300"
+            disabled={!validEmail || !password ? true : false}
+          >
             Sign in
           </button>
         </form>
-      </div>
-    </div>
+      </Card>
+    </>
   );
 };
 

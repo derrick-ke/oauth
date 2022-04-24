@@ -9,7 +9,7 @@ import NotFound from "./pages/NotFound";
 
 function App() {
   return (
-    <div className="App">
+    <div className="h-screen w-full mx-auto flex items-center justify-center xl:bg-gray-200 lg:bg-gray-200 md:bg-gray-200 sm:bg-gray-200">
       <Router>
         <Routes>
           <Route path="/sign-in" element={<Signin />} />

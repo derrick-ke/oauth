@@ -24,6 +24,7 @@
     "consistent-return": "warn",
     "no-return-await": "off",
     "no-underscore-dangle": "off",
-    "prefer-destructuring": "warn"
+    "prefer-destructuring": "warn",
+    "no-param-reassign": "off"
   }
 }
